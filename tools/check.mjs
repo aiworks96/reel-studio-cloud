@@ -22,6 +22,7 @@ const id = args.find((a) => !a.startsWith("--"));
 const opt = (name, d) => { const i = args.indexOf(`--${name}`); return i >= 0 ? args[i + 1] : d; };
 if (!id) { console.error("Usage: npm run check -- <CompositionId> [--every 15]"); process.exit(1); }
 const every = parseInt(opt("every", "15"), 10);
+const maxLength = parseInt(opt("max-length", "90"), 10);
 const mp4 = opt("mp4", `out/${id}.mp4`);
 const dir = path.join(root, "out", id, "check");
 fs.rmSync(dir, { recursive: true, force: true });
@@ -103,7 +104,7 @@ runs.forEach((r, idx) => {
   if (len < 2.5 && !edge) add("warn", "pacing", `Scene "${r.name}" lasts only about ${len.toFixed(1)} s. Very short scenes feel rushed.`);
 });
 if (total / fps > 60) add("warn", "length", `Reel is ${(total / fps).toFixed(1)} s. Keep it under 60 s.`);
-if (total / fps > 90) add("fix", "length", `Reel is ${(total / fps).toFixed(1)} s. Reels longer than 90 s are not allowed.`);
+if (total / fps > maxLength) add("fix", "length", `Reel is ${(total / fps).toFixed(1)} s. Reels longer than ${maxLength} s are not allowed (pass --max-length to raise this for a long-form video).`);
 
 // frozen picture (needs a rendered mp4)
 const mp4Path = path.join(root, mp4);
@@ -123,6 +124,10 @@ const picks = frames.filter((f, i) => f === 0 || f % (fps * perThumb) === 0 || i
 picks.forEach((f, i) => fs.copyFileSync(path.join(dir, `f_${String(f).padStart(5, "0")}.jpg`), path.join(dir, `c_${String(i).padStart(3, "0")}.jpg`)));
 const cols = Math.min(8, picks.length);
 const rows = Math.ceil(picks.length / cols);
+// ffmpeg's tile filter needs a full grid, so pad the last thumbnail to the end.
+const need = cols * rows;
+const last = path.join(dir, `c_${String(picks.length - 1).padStart(3, "0")}.jpg`);
+for (let i = picks.length; i < need; i++) fs.copyFileSync(last, path.join(dir, `c_${String(i).padStart(3, "0")}.jpg`));
 const sheet = spawnSync("ffmpeg", ["-y", "-v", "error", "-framerate", "1", "-i", path.join(dir, "c_%03d.jpg"), "-vf", `scale=216:384,tile=${cols}x${rows}:padding=6:color=0x222222`, "-frames:v", "1", path.join(dir, "contact-sheet.jpg")], { encoding: "utf8" });
 if (sheet.status !== 0) add("warn", "contact-sheet", "ffmpeg could not build the contact sheet: " + sheet.stderr);
 picks.forEach((_, i) => fs.rmSync(path.join(dir, `c_${String(i).padStart(3, "0")}.jpg`)));

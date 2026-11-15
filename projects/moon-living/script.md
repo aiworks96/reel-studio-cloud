@@ -93,7 +93,11 @@ timings come from the same synthesis as the audio and line up exactly (last word
 | 22 | nobody | A big 0 on the Moon |
 | 23 | timeline | 1968 / 1972 / 2026 / 2027 / 2028, and 12 who walked |
 | 24 | your-sun | The Earth hanging in a black sky, a figure reaching up |
-| 25 | humanity | HUMANITY, and a figure standing on the Moon |
+| 25 | humanity | Two figures waving on two worlds, TOGETHER |
+| 26 | stand-on | HUMANITY, and a figure standing on the Moon |
+
+Cuts land on the sentence starts, and every element pops on the word it illustrates.
+Scenes run 2.8-8.5 s, so the reel never sits on one picture for long.
 
 ## Rendering
 
@@ -105,11 +109,12 @@ gh workflow run render.yml -f reel=moon-living
 gh run watch
 ```
 
-`.github/workflows/render.yml` runs the self-check, then the render, then uploads both the
-mp4 and the check report + contact sheet as artifacts.
+`.github/workflows/render.yml` renders the reel, then runs the self-check (so the
+frozen-picture test has the mp4), then uploads the mp4 and the check report + contact
+sheet as artifacts.
 
 ## Note on length
 
-`npm run check` flags any reel longer than 90 s as a blocking problem, because the kit is
-built for social reels. This one is a 2:33 documentary deep dive by design, so that single
-finding is expected and accepted. Every other finding should be clean.
+The kit's self-check treats anything over 90 s as a blocking problem, because it is built
+for social reels. This one is a 2:33 documentary deep dive by design, so the workflow runs
+the check with `--max-length 200`. The default is still 90 s - only this workflow raises it.
