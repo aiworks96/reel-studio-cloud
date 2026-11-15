@@ -235,22 +235,24 @@ export const Chip: React.FC<{
   );
 };
 
-/** A straight arrow from (x1,y1) to (x2,y2). */
-export const Arrow: React.FC<{ x1: number; y1: number; x2: number; y2: number; color: string; width?: number; head?: number }> = ({
-  x1,
-  y1,
-  x2,
-  y2,
-  color,
-  width = 3,
-  head = 14,
-}) => {
+/** A straight arrow from (x1,y1) to (x2,y2). `flow` makes the line run like a conveyor. */
+export const Arrow: React.FC<{
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  color: string;
+  width?: number;
+  head?: number;
+  flow?: boolean;
+}> = ({ x1, y1, x2, y2, color, width = 3, head = 14, flow = false }) => {
+  const frame = useCurrentFrame();
   const a = Math.atan2(y2 - y1, x2 - x1);
   const b1 = [x2 - head * Math.cos(a - 0.42), y2 - head * Math.sin(a - 0.42)];
   const b2 = [x2 - head * Math.cos(a + 0.42), y2 - head * Math.sin(a + 0.42)];
   return (
     <g stroke={color} strokeWidth={width} fill="none" strokeLinecap="round">
-      <path d={`M ${x1},${y1} L ${x2},${y2}`} />
+      <path d={`M ${x1},${y1} L ${x2},${y2}`} strokeDasharray={flow ? "14 16" : undefined} strokeDashoffset={flow ? -((frame * 1.4) % 30) : undefined} />
       <path d={`M ${b1[0]},${b1[1]} L ${x2},${y2} L ${b2[0]},${b2[1]}`} />
     </g>
   );

@@ -114,6 +114,14 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
   const hopY = 574 - 500 * hopU * (1 - hopU);
   // scene 26: the figure drifts in low gravity.
   const bobY = 786 - Math.abs(Math.sin((frame - S.standOn[0]) / 34)) * 7;
+  // scene 19: the impactor actually travels into the Earth.
+  const impactProg = Math.min(1, Math.max(0, (frame - S.theImpact[0]) / (S.theImpact[1] - S.theImpact[0])));
+  const impactX = 740 - 160 * impactProg;
+  // scene 16: the child hops, because down there is one sixth gravity.
+  const bornU = ((frame - S.bornThere[0]) % 42) / 42;
+  const bornHopY = 524 - 54 * bornU * (1 - bornU);
+  // scene 17: the ocean swells.
+  const swell = Math.sin((frame - S.lighter[0]) / 48) * 16;
   const pal: Pal = {
     ink: b.colors.text,
     bg: b.colors.bg,
@@ -542,9 +550,9 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
           <g opacity={s14a.opacity}>
             <Earth cx={110} cy={520} r={84} color={pal.earth} land={pal.land} />
             <Moon cx={790} cy={520} r={68} fill={pal.moon} crater={pal.crater} edge={pal.moonEdge} />
-            <Arrow x1={210} y1={420} x2={700} y2={420} color={pal.ink} width={3} />
-            <Arrow x1={210} y1={520} x2={700} y2={520} color={pal.ink} width={3} />
-            <Arrow x1={210} y1={620} x2={700} y2={620} color={pal.ink} width={3} />
+            <Arrow x1={210} y1={420} x2={700} y2={420} color={pal.ink} width={3} flow />
+            <Arrow x1={210} y1={520} x2={700} y2={520} color={pal.ink} width={3} flow />
+            <Arrow x1={210} y1={620} x2={700} y2={620} color={pal.ink} width={3} flow />
           </g>
           <g opacity={s14b.opacity}>
             <Chip x={370} y={300} w={160} h={62} text="AIR" bg={pal.bg} fg={pal.ink} size={32} />
@@ -591,7 +599,7 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
             <Moon cx={640} cy={700} r={180} fill={pal.moon} crater={pal.crater} edge={pal.moonEdge} />
           </g>
           <g opacity={s16b.opacity}>
-            <Figure x={610} y={524} h={76} color={pal.ink} weight={4} />
+            <Figure x={610} y={bornHopY} h={76} color={pal.ink} weight={4} />
           </g>
           <g opacity={s16c.opacity}>
             <Chip x={300} y={200} w={300} h={84} text="1/6 g" bg={pal.earth} fg={pal.bg} size={44} />
@@ -612,11 +620,13 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
             <Chip x={440} y={140} w={380} h={72} text="DIFFERENT LUNGS" bg={pal.bg} fg={pal.ink} size={32} />
           </g>
           <g opacity={s17c.opacity}>
-            <path
-              d="M 40,700 Q 160,620 280,700 Q 400,780 520,700 Q 640,620 760,700 L 860,700 L 860,880 L 40,880 Z"
-              fill={pal.earth}
-              opacity={0.85}
-            />
+            <g transform={`translate(${swell} 0)`}>
+              <path
+                d="M 40,700 Q 160,620 280,700 Q 400,780 520,700 Q 640,620 760,700 L 860,700 L 860,880 L 40,880 Z"
+                fill={pal.earth}
+                opacity={0.85}
+              />
+            </g>
             <Figure x={450} y={690} h={120} color={pal.bg} weight={6} />
           </g>
         </Art>
@@ -654,7 +664,7 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
             <Earth cx={300} cy={520} r={170} color={pal.earth} land={pal.land} />
           </g>
           <g opacity={s19b.opacity}>
-            <Moon cx={740} cy={430} r={104} fill={pal.moon} crater={pal.crater} edge={pal.moonEdge} />
+            <Moon cx={impactX} cy={430} r={104} fill={pal.moon} crater={pal.crater} edge={pal.moonEdge} />
           </g>
           <g opacity={s19c.opacity}>
             <path d="M 468,512 L 610,406" stroke={pal.ink} strokeWidth={3} strokeDasharray="9 10" opacity={0.4} />
