@@ -88,7 +88,7 @@ for (let i = 1; i < probed.length; i++) {
 
 // hook
 const firstContent = probed.find((p) => p.content > 0);
-if (!firstContent || firstContent.frame > fps) add("fix", "hook", `Hook is not on screen within the first second (first content at ${firstContent ? (firstContent.frame / fps).toFixed(1) : "never"} s)`);
+if (!noProbe && (!firstContent || firstContent.frame > fps)) add("fix", "hook", `Hook is not on screen within the first second (first content at ${firstContent ? (firstContent.frame / fps).toFixed(1) : "never"} s)`);
 
 // scenes
 const runs = [];

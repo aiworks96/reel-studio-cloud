@@ -38,11 +38,13 @@ export const durationInFrames = Math.ceil((97.71 + 1.0) * FPS);
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const smooth = (v: number) => v * v * (3 - 2 * v);
 
-/** One still, moved slowly. */
+/** One still, moved slowly. `start` and `until` are in seconds; the frame maths below is in frames. */
 const Shot: React.FC<{ file: string; start: number; until: number; move: Move }> = ({ file, start, until, move }) => {
   const frame = useCurrentFrame();
-  const local = frame - start;
-  const span = until - start;
+  const startFrame = Math.round(start * FPS);
+  const untilFrame = Math.round(until * FPS);
+  const local = frame - startFrame;
+  const span = untilFrame - startFrame;
   const p = clamp01(local / span);
 
   const opacity = Math.min(smooth(clamp01(local / FADE)), smooth(clamp01((span - local) / FADE)));
@@ -127,7 +129,15 @@ export const GravityLost: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: "#05070C" }}>
       {SCENES.map((s, i) => (
-        <Shot key={s.file} file={s.file} start={s.start} until={SCENES[i + 1]?.start ?? durationInFrames / FPS} move={s.move} />
+        <Shot
+          key={s.file}
+          file={s.file}
+          start={s.start}
+          // each shot runs FADE frames past the next one's start, so the outgoing
+          // fade-out and the incoming fade-in overlap instead of leaving a black gap
+          until={SCENES[i + 1] ? SCENES[i + 1].start + FADE / FPS : durationInFrames / FPS}
+          move={s.move}
+        />
       ))}
 
       {/* grade + vignette, so eight different AI stills read as one film */}
