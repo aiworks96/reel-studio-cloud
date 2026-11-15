@@ -23,6 +23,7 @@ const opt = (name, d) => { const i = args.indexOf(`--${name}`); return i >= 0 ? 
 if (!id) { console.error("Usage: npm run check -- <CompositionId> [--every 15]"); process.exit(1); }
 const every = parseInt(opt("every", "15"), 10);
 const maxLength = parseInt(opt("max-length", "90"), 10);
+const noProbe = args.includes("--no-probe");
 const mp4 = opt("mp4", `out/${id}.mp4`);
 const dir = path.join(root, "out", id, "check");
 fs.rmSync(dir, { recursive: true, force: true });
@@ -68,7 +69,7 @@ const findings = [];
 const add = (severity, type, detail, frameList = []) => findings.push({ severity, type, detail, frames: frameList });
 const byFrame = new Map(logs.map((l) => [l.frame, l]));
 const probed = frames.map((f) => byFrame.get(f)).filter(Boolean);
-if (probed.length !== frames.length) add("fix", "probe", `Only ${probed.length}/${frames.length} frames reported measurements. Is <ReelFrame probe={probe}> used in the reel?`);
+if (probed.length !== frames.length && !noProbe) add("fix", "probe", `Only ${probed.length}/${frames.length} frames reported measurements. Is <ReelFrame probe={probe}> used in the reel?`);
 
 // element issues, grouped
 const groups = new Map();

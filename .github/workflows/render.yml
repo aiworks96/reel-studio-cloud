@@ -6,6 +6,10 @@ on:
         description: 'Composition id to render (default: moon-living)'
         required: false
         default: moon-living
+      check-flags:
+        description: 'Extra flags for the self-check'
+        required: false
+        default: '--max-length 200'
 
 jobs:
   render:
@@ -30,7 +34,7 @@ jobs:
 
       - name: Self-check
         continue-on-error: true
-        run: npm run check -- ${{ github.event.inputs.reel || 'moon-living' }} --every 30 --max-length 200
+        run: npm run check -- ${{ github.event.inputs.reel || 'moon-living' }} --every 30 ${{ github.event.inputs.check-flags || '--max-length 200' }}
 
       - name: Upload Rendered Video
         uses: actions/upload-artifact@v4

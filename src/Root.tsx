@@ -3,6 +3,7 @@ import { Composition, Folder } from "remotion";
 import { FPS, HEIGHT, WIDTH } from "./layout";
 import { PlaceholderSheet } from "./dev/PlaceholderSheet";
 import { REELS } from "./reels/registry";
+import { GravityLost, durationInFrames as gravityLostFrames, FPS as GL_FPS, HEIGHT as GL_HEIGHT, WIDTH as GL_WIDTH } from "./cinematic/gravity-lost/Cinematic";
 
 export const Root: React.FC = () => (
   <>
@@ -27,6 +28,17 @@ export const Root: React.FC = () => (
         ) : null}
       </React.Fragment>
     ))}
+    <Folder name="Cinematic">
+      <Composition
+        id="gravity-lost"
+        component={GravityLost}
+        width={GL_WIDTH}
+        height={GL_HEIGHT}
+        fps={GL_FPS}
+        durationInFrames={gravityLostFrames}
+        defaultProps={{}}
+      />
+    </Folder>
     <Folder name="Dev">
       <Composition id="PlaceholderSheet-Illustrated" component={PlaceholderSheet} width={2000} height={1600} fps={1} durationInFrames={1} defaultProps={{ look: "illustrated" as const }} />
       <Composition id="PlaceholderSheet-Pixel" component={PlaceholderSheet} width={2000} height={1600} fps={1} durationInFrames={1} defaultProps={{ look: "pixel" as const }} />

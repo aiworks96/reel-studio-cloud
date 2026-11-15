@@ -44,9 +44,15 @@ async def run(args: argparse.Namespace) -> None:
     if not words:
         raise SystemExit("no word boundaries returned")
 
-    out = ROOT / "public" / "reels" / args.id / "captions.words.json"
+    out_dir = pathlib.Path(args.out_dir) if args.out_dir else ROOT / "public" / "reels" / args.id
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out = out_dir / "captions.words.json"
     out.write_text(json.dumps(words, indent=2) + "\n", encoding="utf-8")
-    print(f"{out.relative_to(ROOT)}: {len(words)} words, last ends at {words[-1]['end']:.2f}s")
+    try:
+        shown = out.relative_to(ROOT)
+    except ValueError:
+        shown = out
+    print(f"{shown}: {len(words)} words, last ends at {words[-1]['end']:.2f}s")
 
 
 def main() -> None:
@@ -56,6 +62,7 @@ def main() -> None:
     ap.add_argument("--rate", default="+0%")
     ap.add_argument("--volume", default="+0%")
     ap.add_argument("--pitch", default="+0Hz")
+    ap.add_argument("--out-dir", default=None, help="output folder (default: public/reels/<id>)")
     asyncio.run(run(ap.parse_args()))
 
 
