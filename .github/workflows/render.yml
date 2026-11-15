@@ -1,6 +1,11 @@
 name: Render Reel Video
 on:
   workflow_dispatch:
+    inputs:
+      reel:
+        description: 'Composition id to render (default: moon-living)'
+        required: false
+        default: moon-living
 
 jobs:
   render:
@@ -8,21 +13,34 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          
+
       - name: Install Dependencies
         run: npm ci
-        
-      - name: Render voice
-        run: npm run render -- voice-test
-        
+
+      - name: Self-check
+        continue-on-error: true
+        run: npm run check -- ${{ github.event.inputs.reel || 'moon-living' }} --every 30
+
+      - name: Render reel
+        run: npm run render -- ${{ github.event.inputs.reel || 'moon-living' }}
+
       - name: Upload Rendered Video
         uses: actions/upload-artifact@v4
         with:
           name: rendered-reel
           path: '**/*.mp4'
 
+      - name: Upload Check Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reel-check
+          path: |
+            out/*/check/report.json
+            out/*/check/contact-sheet.jpg
+            out/*/check/f_*.jpg

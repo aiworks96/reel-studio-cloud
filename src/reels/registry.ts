@@ -5,6 +5,7 @@ import type { Word } from "../timing";
 import { PRESETS } from "../presets";
 import * as demo from "./demo/Reel";
 import * as r_voice_test from "./voice-test/Reel";
+import * as r_moon_living from "./moon-living/Reel";
 // <new-reel-imports>
 
 export type ReelEntry = {
@@ -28,6 +29,7 @@ export const REELS: ReelEntry[] = [
     ],
   },
   { id: "voice-test", Component: r_voice_test.Reel, durationInFrames: r_voice_test.durationInFrames },
+  { id: "moon-living", Component: r_moon_living.Reel, durationInFrames: r_moon_living.durationInFrames },
   // <new-reel-entries>
 ];
 
