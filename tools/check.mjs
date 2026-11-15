@@ -122,14 +122,19 @@ const step = Math.max(1, Math.round(fps / every)); // samples per second
 const perThumb = probed.length > 45 * step ? 2 : 1;
 const picks = frames.filter((f, i) => f === 0 || f % (fps * perThumb) === 0 || i === frames.length - 1).filter((f, i, a) => a.indexOf(f) === i);
 picks.forEach((f, i) => fs.copyFileSync(path.join(dir, `f_${String(f).padStart(5, "0")}.jpg`), path.join(dir, `c_${String(i).padStart(3, "0")}.jpg`)));
-const cols = Math.min(8, picks.length);
-const rows = Math.ceil(picks.length / cols);
-// ffmpeg's tile filter needs a full grid, so pad the last thumbnail to the end.
-const need = cols * rows;
-const last = path.join(dir, `c_${String(picks.length - 1).padStart(3, "0")}.jpg`);
-for (let i = picks.length; i < need; i++) fs.copyFileSync(last, path.join(dir, `c_${String(i).padStart(3, "0")}.jpg`));
-const sheet = spawnSync("ffmpeg", ["-y", "-v", "error", "-framerate", "1", "-i", path.join(dir, "c_%03d.jpg"), "-vf", `scale=216:384,tile=${cols}x${rows}:padding=6:color=0x222222`, "-frames:v", "1", path.join(dir, "contact-sheet.jpg")], { encoding: "utf8" });
-if (sheet.status !== 0) add("warn", "contact-sheet", "ffmpeg could not build the contact sheet: " + sheet.stderr);
+// Contact sheet: one thumbnail per pick, tiled. ffmpeg's tile filter needs a complete
+// grid, so use a column count that divides the thumbnail count exactly.
+let cols = Math.min(8, picks.length);
+while (cols > 1 && picks.length % cols !== 0) cols--;
+const rows = picks.length / cols;
+const ffmpegBin = process.env.FFMPEG_PATH || "ffmpeg";
+const sheet = spawnSync(
+  ffmpegBin,
+  ["-y", "-v", "error", "-framerate", "1", "-i", path.join(dir, "c_%03d.jpg"), "-vf", `scale=216:384,tile=${cols}x${rows}:padding=6:color=0x222222`, "-frames:v", "1", path.join(dir, "contact-sheet.jpg")],
+  { encoding: "utf8" },
+);
+if (sheet.error) add("warn", "contact-sheet", `${ffmpegBin} could not be run, so no contact sheet was built: ${sheet.error.message}`);
+else if (sheet.status !== 0) add("warn", "contact-sheet", "ffmpeg could not build the contact sheet: " + (sheet.stderr || `exit ${sheet.status}`));
 picks.forEach((_, i) => fs.rmSync(path.join(dir, `c_${String(i).padStart(3, "0")}.jpg`)));
 
 const out = { id, seconds: +(total / fps).toFixed(2), sampledFrames: frames.length, scenes: runs.map((r) => ({ ...r, seconds: +((r.end - r.start) / fps).toFixed(1) })), thumbnails: picks.map((f) => +(f / fps).toFixed(1)), findings };

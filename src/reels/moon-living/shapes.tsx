@@ -25,6 +25,15 @@ export const useIn = (at: number, dist = 26) => {
   };
 };
 
+/** Same as useIn, but a plain function, so it can be used inside .map() without breaking the rules of hooks. */
+export const popIn = (frame: number, at: number, fps = 30, dist = 26) => {
+  const p = spring({ frame: frame - at, fps, config: { damping: 16, stiffness: 150, mass: 0.7 } });
+  return {
+    opacity: interpolate(frame - at, [0, 5], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
+    dy: (1 - p) * dist,
+  };
+};
+
 /** Continuous 0..1 ramp, for loops (rotating moons, travelling pulses). */
 export const useRamp = (from: number, to: number, frames: number) => {
   const frame = useCurrentFrame();

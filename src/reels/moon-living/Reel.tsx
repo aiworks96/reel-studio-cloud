@@ -28,6 +28,7 @@ import {
   Stars,
   Txt,
   mix,
+  popIn,
   useIn,
 } from "./shapes";
 import words from "../../../public/reels/moon-living/captions.words.json";
@@ -39,7 +40,7 @@ export const durationInFrames = t.duration(1.0);
 /* ------------------------------------------------------------- scene map */
 // Cut points are the sentence starts, taken from the real word timings.
 const S = {
-  hook: [t.at(0), t.at(20)],
+  hook: [0, t.at(20)],
   twoWorlds: [t.at(20), t.at(42)],
   oneSixth: [t.at(42), t.at(61)],
   noAir: [t.at(61), t.at(75)],
@@ -147,9 +148,9 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
   const s7b = useIn(t.at(102));
   // ---- 8 temperatures / 9 one rock ---------------------------------------
   const s8a = useIn(t.at(103));
-  const s8b = useIn(t.at(108));
+  const s8b = useIn(t.at(114));
   const s8c = useIn(t.at(115));
-  const s8d = useIn(t.at(119));
+  const s8d = useIn(t.at(124));
   const s9a = useIn(t.at(125));
   const s9b = useIn(t.at(127));
   // ---- 10 distance / 11 light / 12 reach her -------------------------------
@@ -195,7 +196,6 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
   const s22a = useIn(t.at(306));
   const s23a = useIn(t.at(314));
   const s23b = useIn(t.at(316));
-  const s23c = useIn(t.at(328));
   // ---- 24 your sun / 25 humanity / 26 stand on -----------------------------
   const s24a = useIn(t.at(333));
   const s24b = useIn(t.at(348));
@@ -380,22 +380,23 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
       <Scene name="temperatures" from={S.temperatures[0]} to={S.temperatures[1]}>
         <Art>
           <g opacity={s8a.opacity}>
-            <circle cx={190} cy={230} r={60} fill={pal.lit} />
-            <path d="M 190,150 L 190,126 M 190,310 L 190,334 M 110,230 L 86,230 M 270,230 L 294,230" stroke={pal.lit} strokeWidth={8} strokeLinecap="round" />
+            <circle cx={190} cy={250} r={60} fill={pal.lit} />
+            <path d="M 190,170 L 190,146 M 190,330 L 190,354 M 110,250 L 86,250 M 270,250 L 294,250" stroke={pal.lit} strokeWidth={8} strokeLinecap="round" />
+            <path d="M 60,700 L 840,700 L 840,790 L 60,790 Z" fill={pal.moonEdge} />
           </g>
-          <rect x={470} y={120} width={390} height={520} rx={28} fill={pal.ink} opacity={s8c.opacity * 0.1} />
           <g opacity={s8b.opacity}>
-            <Chip x={110} y={430} w={280} h={84} text="127°C" bg={pal.lit} fg={pal.bg} size={44} />
-          </g>
-          <g opacity={s8d.opacity}>
-            <Chip x={520} y={430} w={300} h={84} text="−173°C" bg={pal.dark} fg={pal.bg} size={44} />
+            <Chip x={110} y={540} w={280} h={84} text="127°C" bg={pal.lit} fg={pal.bg} size={44} />
           </g>
           <g opacity={s8c.opacity}>
-            <path d="M 60,700 L 470,700 L 500,660 L 530,700 L 840,700 L 840,760 L 60,760 Z" fill={pal.moonEdge} />
-            <path d="M 530,700 L 530,760" stroke={pal.dark} strokeWidth={3} strokeDasharray="8 8" opacity={0.35} />
+            {/* the rock, and the shadow it throws away from the sun */}
+            <path d="M 455,700 L 478,642 L 535,642 L 558,700 Z" fill={pal.bg} stroke={pal.ink} strokeWidth={3} />
+            <path d="M 558,700 L 840,700 L 840,790 L 528,790 Z" fill={pal.ink} opacity={0.17} />
+          </g>
+          <g opacity={s8d.opacity}>
+            <Chip x={560} y={540} w={300} h={84} text="−173°C" bg={pal.dark} fg={pal.bg} size={44} />
           </g>
         </Art>
-        <Txt x={0} y={830} size={40} weight={700}>
+        <Txt x={0} y={840} size={40} weight={700}>
           <span style={{ opacity: 0.55 }}>in full sun · in one rock&apos;s shadow</span>
         </Txt>
       </Scene>
@@ -467,6 +468,7 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
       <Scene name="reach-her" from={S.reachHer[0]} to={S.reachHer[1]}>
         <Art>
           <g opacity={s12a.opacity}>
+            <path d="M 250,430 Q 380,300 500,390" fill="none" stroke={pal.ink} strokeWidth={3} strokeDasharray="9 11" opacity={0.35} />
             <Rocket x={180} y={480} s={1.3} color={pal.bg} edge={pal.ink} />
             <Chip x={60} y={610} w={240} h={66} text="3 DAYS" bg={pal.dark} fg={pal.bg} size={32} />
           </g>
@@ -684,10 +686,10 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
           <g opacity={s22a.opacity} transform={`translate(0 ${s22a.dy})`}>
             <Moon cx={450} cy={520} r={200} fill={pal.moon} crater={pal.crater} edge={pal.moonEdge} />
           </g>
-          <Txt x={0} y={380} size={280} weight={800} color={pal.ink}>
-            0
-          </Txt>
         </Art>
+        <Txt x={0} y={360} size={280} weight={800} color={pal.ink}>
+          0
+        </Txt>
         <Txt x={0} y={780} size={48} weight={800}>
           no one has ever lived there
         </Txt>
@@ -697,7 +699,7 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
       <Scene name="timeline" from={S.timeline[0]} to={S.timeline[1]}>
         <Art>
           <g opacity={s23a.opacity}>
-            <path d="M 70,420 L 830,420" stroke={pal.ink} strokeWidth={3} opacity={0.35} />
+            <path d="M 70,360 L 830,360" stroke={pal.ink} strokeWidth={3} opacity={0.35} />
             {[
               [90, "1968"],
               [230, "1972"],
@@ -706,10 +708,10 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
               [810, "2028"],
             ].map(([x, label]) => (
               <g key={label as string}>
-                <circle cx={x as number} cy={420} r={13} fill={pal.ink} />
+                <circle cx={x as number} cy={360} r={13} fill={pal.ink} />
                 <text
                   x={x as number}
-                  y={470}
+                  y={410}
                   textAnchor="middle"
                   fill={pal.ink}
                   fontFamily={FONTS[b.font]}
@@ -722,18 +724,24 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
             ))}
           </g>
           <g opacity={s23b.opacity}>
-            <circle cx={600} cy={420} r={22} fill={pal.earth} />
-            <Chip x={470} y={230} w={260} h={72} text="ARTEMIS II" bg={pal.earth} fg={pal.bg} size={30} />
+            <circle cx={600} cy={360} r={22} fill={pal.earth} />
+            <Chip x={470} y={150} w={260} h={72} text="ARTEMIS II" bg={pal.earth} fg={pal.bg} size={30} />
           </g>
-          <g opacity={s23c.opacity}>
-            <Txt x={60} y={560} w={360} size={190} weight={800}>
-              12
-            </Txt>
-            <Txt x={420} y={640} w={400} size={36} weight={700} align="left">
-              <span style={{ opacity: 0.6 }}>have walked on it</span>
-            </Txt>
-          </g>
+          {/* the twelve who have walked on it, one by one */}
+          {Array.from({ length: 12 }).map((_, i) => {
+            const p = popIn(frame, t.at(328) + i * 3);
+            const x = 155 + (i % 6) * 120;
+            const y = 560 + Math.floor(i / 6) * 150;
+            return (
+              <g key={i} opacity={p.opacity} transform={`translate(0 ${p.dy})`}>
+                <Figure x={x} y={y} h={78} color={pal.ink} weight={4} />
+              </g>
+            );
+          })}
         </Art>
+        <Txt x={0} y={810} size={44} weight={800}>
+          twelve have walked on it
+        </Txt>
       </Scene>
 
       {/* 24 - the Earth becomes your sun */}
