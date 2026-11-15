@@ -107,6 +107,13 @@ type Pal = {
 export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, probe }) => {
   const frame = useCurrentFrame();
   const b = brand;
+  // scene 3: the figure hops in one-sixth gravity. The path is the same parabola as the
+  // dashed arc above it (y = base - 4*h*u*(1-u)), so the figure lands exactly on the arc.
+  const hopU = ((frame - S.oneSixth[0]) % 46) / 46;
+  const hopX = 615 + 120 * hopU;
+  const hopY = 574 - 500 * hopU * (1 - hopU);
+  // scene 26: the figure drifts in low gravity.
+  const bobY = 786 - Math.abs(Math.sin((frame - S.standOn[0]) / 34)) * 7;
   const pal: Pal = {
     ink: b.colors.text,
     bg: b.colors.bg,
@@ -271,7 +278,9 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
             <JumpArc x={165} y={574} w={120} h={62} color={pal.ink} />
             <JumpArc x={615} y={574} w={120} h={250} color={pal.ink} />
             <Figure x={225} y={574} h={86} color={pal.ink} weight={5} />
-            <Figure x={675} y={574} h={86} color={pal.ink} weight={5} />
+          </g>
+          <g opacity={s3b.opacity}>
+            <Figure x={hopX} y={hopY} h={86} color={pal.ink} weight={5} />
           </g>
           <g opacity={s3c.opacity}>
             <circle cx={675} cy={324} r={26} fill={pal.ink} />
@@ -342,7 +351,15 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
       <Scene name="twenty-seven" from={S.twentySeven[0]} to={S.twentySeven[1]}>
         <Art>
           <g opacity={s6a.opacity} transform={`translate(0 ${s6a.dy})`}>
-            <Moon cx={450} cy={430} r={180} fill={pal.moon} crater={pal.crater} edge={pal.moonEdge} />
+            <Moon
+              cx={450}
+              cy={430}
+              r={180}
+              fill={pal.moon}
+              crater={pal.crater}
+              edge={pal.moonEdge}
+              spin={((frame - S.twentySeven[0]) * 0.32) % 360}
+            />
           </g>
           <g opacity={s6b.opacity}>
             <path d="M 262,430 A 188,188 0 0 1 560,268" fill="none" stroke={pal.ink} strokeWidth={4} strokeLinecap="round" />
@@ -489,7 +506,15 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
       <Scene name="half-asleep" from={S.halfAsleep[0]} to={S.halfAsleep[1]}>
         <Art>
           <g opacity={s13a.opacity}>
-            <Moon cx={450} cy={620} r={230} fill={pal.moon} crater={pal.crater} edge={pal.moonEdge} />
+            <Moon
+              cx={450}
+              cy={620}
+              r={230}
+              fill={pal.moon}
+              crater={pal.crater}
+              edge={pal.moonEdge}
+              spin={((frame - S.halfAsleep[0]) * 0.13) % 360}
+            />
           </g>
           <g opacity={s13b.opacity}>
             <House x={300} y={420} w={58} fill={pal.bg} edge={pal.ink} lit />
@@ -807,7 +832,7 @@ export const Reel: React.FC<ReelProps> = ({ brand = myBrand, debugSafeZones, pro
             <path d="M 70,800 Q 300,750 520,800 L 520,920 L 70,920 Z" fill={pal.moonEdge} />
           </g>
           <g opacity={s26c.opacity}>
-            <Figure x={300} y={786} h={130} color={pal.bg} weight={7} />
+            <Figure x={300} y={bobY} h={130} color={pal.bg} weight={7} />
           </g>
         </Art>
         <Txt x={0} y={950} size={38} weight={700} color={pal.ink}>
